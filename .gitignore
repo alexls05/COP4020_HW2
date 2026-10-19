@@ -1,0 +1,7 @@
+.devcontainer/
+as2-textversion-5544041.js
+as2-webversion-5544041.js
+node_modules/
+package-lock.json
+package.json
+shapes.js

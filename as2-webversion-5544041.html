@@ -1,0 +1,135 @@
+<html>
+
+<head>
+    <title>
+        This here is a web page?
+    </title>
+    <script src="as2-webversion-5544041.js"></script>
+</head>
+<input type="text" id="shapeNum" placeholder="Enter number of shapes">
+<button id="confirmNum">Confirm</button>
+<br></br>
+<text id="shapeLabel" hidden="true">Shape 1:</text>
+<select id="shapeType" name="shapeType" hidden="true">
+    <option value="" disabled selected>Select a shape...</option>
+    <option value="rectangle">Rectangle</option>
+    <option value="square">Square</option>
+    <option value="triangle">Triangle</option>
+    <option value="oval">Oval</option>
+    <option value="circle">Circle</option>
+</select>
+<br></br>
+<input type="text" id="shapeInput" width="400" hidden="true" placeholder="(height, width)">
+<button id="confirmInput" hidden="true">Confirm</button>
+<text>
+    <p id="scriptScratchPad">
+        This is where we will put output.
+    </p>
+    <canvas id="scriptCanvas" width="800" height="400"></canvas>
+</text>
+
+<script>
+    let e = document.getElementById("scriptScratchPad");
+    let canvas = document.getElementById("scriptCanvas");
+    let drawingContext = canvas.getContext("2d");
+    let shapewalk = 0;
+    let shapeNum = document.getElementById("shapeNum");
+    let confirmNum = document.getElementById("confirmNum");
+    let confirmInput = document.getElementById("confirmInput");
+    let shapeType = document.getElementById("shapeType");
+    let shapeLabel = document.getElementById("shapeLabel");
+    let shapeInput = document.getElementById("shapeInput");
+
+    confirmNum.addEventListener('click', () => {
+        numShapes = parseInt(shapeNum.value);
+        shapeNum.hidden = true;
+        confirmNum.hidden = true;
+        shapeLabel.hidden = false;
+        shapeType.hidden = false;
+        shapeInput.hidden = false;
+        confirmInput.hidden = false;
+    });
+    shapeType.addEventListener('change', () => {
+        switch (shapeType.value) {
+            case "rectangle":
+                shapeInput.placeholder = "(height, width)";
+                break;
+            case "square":
+                shapeInput.placeholder = "(side length)";
+                break;
+            case "triangle":
+                shapeInput.placeholder = "(side1, side2, side3)";
+                break;
+            case "oval":
+                shapeInput.placeholder = "(height, width)";
+                break;
+            case "circle":
+                shapeInput.placeholder = "(radius)";
+                break;
+        }
+    });
+    confirmInput.addEventListener('click', () => {
+        let input = shapeInput.value.split(",").map(Number);
+        let shape;
+        switch (shapeType.value) {
+            case "rectangle":
+                shape = new Rectangle(input[0], input[1]);
+                break;
+            case "square":
+                shape = new Square(input[0]);
+                break;
+            case "triangle":
+                shape = new Triangle(input[0], input[1], input[2]);
+                break;
+            case "oval":
+                shape = new Oval(input[0], input[1]);
+                break;
+            case "circle":
+                shape = new Circle(input[0]);
+                break;
+        }
+        shapes.push(shape);
+        shapewalk++;
+        if (shapewalk < numShapes) {
+            shapeLabel.innerHTML = "Shape " + (shapewalk + 1) + ":";
+            shapeType.value = "";
+            shapeInput.value = "";
+        } else {
+            shapeLabel.hidden = true;
+            shapeType.hidden = true;
+            shapeInput.hidden = true;
+            confirmInput.hidden = true;
+            doStuff();
+        }
+    });
+
+    function doStuff() {
+        let res = "<p>Our set of shapes has " + shapes.length + " shapes.</p>";
+
+        res += "<table>";
+        res += "<tr><th>Shape #</th><th>Area</th><th>Perimeter</th><th>Area+Perimeter</th></tr>";
+
+        shapewalk = 0;
+        for (let shape of shapes) {
+            shapewalk++;
+            res += ("<tr>");
+            res += ("<td>" + shapewalk + "</td>");
+            res += ("<td>" + shape.getArea() + "</td>");
+            res += ("<td>" + shape.getPerimeter() + "</td>");
+            res += ("<td>" + (shape.getArea() + shape.getPerimeter()) + "</td>");
+            res += ("</tr>");
+        }
+        res += "</table>";
+
+        e.innerHTML += res;
+        startx = 0;
+        starty = 0;
+        for (let shape of shapes) {
+            starty += (shape.getLongestSegmentLength() + startx) > 800 ? 100 : 0;
+            startx = (shape.getLongestSegmentLength() + startx) % 800 + 20;
+            shape.drawMe(drawingContext, startx, starty);
+        }
+    }
+</script>
+
+</html>
